@@ -62,7 +62,34 @@ async init(isInitiator: boolean): Promise<void> {
     this.remoteStream = event.streams[0];
     this.config.onRemoteStream(this.remoteStream);
   };
+  
+async getLocalStream(withVideo: boolean): Promise<MediaStream> {
+  const constraints: MediaStreamConstraints = {
+    audio: true,
+    video: withVideo ? { facingMode: 'user', width: 1280, height: 720 } : false,
+  };
 
+  try {
+    this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    
+    // NEW: Check if we actually got video
+    if (withVideo) {
+      const videoTracks = this.localStream.getVideoTracks();
+      if (videoTracks.length === 0) {
+        console.error('❌ CRITICAL: Camera permission was DENIED. Check browser permissions.');
+        throw new Error('Camera access denied - check browser permissions');
+      }
+    }
+    
+  } catch (err) {
+    console.error('❌ Camera error:', err);
+    // Don't silently fall back - throw the error
+    throw err; // <-- CHANGE: Was swallowing the error
+  }
+
+  this.config.onLocalStream(this.localStream);
+  return this.localStream;
+}
   this.pc.onicecandidate = (event) => {
     if (event.candidate) {
       console.log('🧊 ICE candidate found:', event.candidate.candidate);
