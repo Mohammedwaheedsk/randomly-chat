@@ -30,6 +30,8 @@ export default function ChatRoom({ session, guestId, nickname, onSkip, onEnd }: 
   const [strangerLeft, setStrangerLeft] = useState(false);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
+  const localVideoMobileRef = useRef<HTMLVideoElement>(null);
+  const localVideoDesktopRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const webrtcRef = useRef<WebRTCManager | null>(null);
@@ -142,8 +144,12 @@ export default function ChatRoom({ session, guestId, nickname, onSkip, onEnd }: 
         }
       },
       onLocalStream: (stream) => {
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
+        console.log('📹 Setting local stream to both video elements');
+        if (localVideoMobileRef.current) {
+          localVideoMobileRef.current.srcObject = stream;
+        }
+        if (localVideoDesktopRef.current) {
+          localVideoDesktopRef.current.srcObject = stream;
         }
       },
       onConnectionStateChange: (state) => {
@@ -422,7 +428,7 @@ export default function ChatRoom({ session, guestId, nickname, onSkip, onEnd }: 
               {/* Floating local video on mobile, bottom right inside remote video */}
               <div className="absolute bottom-2 right-2 w-24 aspect-[3/4] sm:aspect-video sm:w-32 lg:hidden bg-gray-900 rounded-xl overflow-hidden border border-white/20 shadow-xl z-30">
                 <video
-                  ref={localVideoRef}
+                  ref={localVideoMobileRef}
                   autoPlay
                   playsInline
                   muted
@@ -437,7 +443,7 @@ export default function ChatRoom({ session, guestId, nickname, onSkip, onEnd }: 
             {/* Inline local video on desktop */}
             <div className="hidden lg:block relative aspect-video bg-gray-900 rounded-xl overflow-hidden border border-white/10 w-full">
               <video
-                ref={localVideoRef}
+                ref={localVideoDesktopRef}
                 autoPlay
                 playsInline
                 muted
