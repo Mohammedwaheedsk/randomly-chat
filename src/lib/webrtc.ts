@@ -12,13 +12,22 @@ const ICE_SERVERS: RTCIceServer[] = [
 
 // REPLACE WITH:
 const ICE_SERVERS: RTCIceServer[] = [
+  // Primary STUN servers (fast but may not work behind NAT)
   { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' },
+  
+  // Free TURN servers (slow but reliably work behind NAT/firewall)
   { 
-    urls: ['turn:numb.viagee.com:3478'],
+    urls: ['turn:numb.viagee.com:3478', 'turn:numb.viagee.com:3478?transport=tcp'],
     username: 'webrtc@live.com',
     credential: 'muazkh'
   },
+  {
+    urls: 'turn:turnserver.open-xchange.com:443?transport=tcp',
+  },
 ];
+
 
 // ============================================================
 // FIX 2: Add Logging to webrtc.ts init()
